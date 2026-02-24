@@ -1,13 +1,8 @@
-import express from 'express';
-import { createServer as createViteServer } from 'vite';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
-const app = express();
-const PORT = 3000;
-
-app.get('/api/dataroma', async (req, res) => {
-  const manager_id = req.query.manager_id as string;
+export default async function handler(req: any, res: any) {
+  const { manager_id } = req.query;
   
   if (!manager_id) {
     return res.status(400).json({ error: 'Missing manager_id' });
@@ -46,27 +41,9 @@ app.get('/api/dataroma', async (req, res) => {
       }
     });
 
-    res.json({ period, holdings: data });
+    res.status(200).json({ period, holdings: data });
   } catch (error: any) {
     console.error(`Error fetching data for ${manager_id}:`, error.message);
     res.status(500).json({ error: 'Failed to fetch data' });
   }
-});
-
-async function startServer() {
-  if (process.env.NODE_ENV !== 'production') {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'spa',
-    });
-    app.use(vite.middlewares);
-  } else {
-    app.use(express.static('dist'));
-  }
-
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
 }
-
-startServer();

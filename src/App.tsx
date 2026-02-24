@@ -45,7 +45,7 @@ export default function App() {
       try {
         await Promise.all(
           DEFAULT_MANAGERS.map(async (manager) => {
-            const response = await fetch(`/api/dataroma/${manager.id}`);
+            const response = await fetch(`/api/dataroma?manager_id=${manager.id}`);
             if (response.ok) {
               const result = await response.json();
               newData[manager.id] = result.holdings;
