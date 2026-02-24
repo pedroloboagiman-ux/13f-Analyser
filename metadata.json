@@ -1,0 +1,5 @@
+{
+  "name": "13F Terminal",
+  "description": "A professional terminal for analyzing 13F filings from Dataroma.",
+  "requestFramePermissions": []
+}
