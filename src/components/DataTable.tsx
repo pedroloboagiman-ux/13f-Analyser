@@ -133,7 +133,14 @@ export function DataTable({ data, managers, tickers, viewMode }: DataTableProps)
       };
     });
 
-    let sortedRows = [...rows];
+    let filteredRows = rows;
+    if (viewMode !== 'portfolio') {
+      filteredRows = rows.filter(row => {
+        return managers.some(m => row.values[m.id] !== 0);
+      });
+    }
+
+    let sortedRows = [...filteredRows];
     if (sortConfig) {
       sortedRows.sort((a, b) => {
         let aVal: any;
