@@ -25,7 +25,18 @@ function parseChange(changeStr: string): number {
 
 function getAbsoluteChange(portfolioShare: number, changeStr: string): number {
   if (!changeStr) return 0;
-  if (changeStr.toLowerCase().includes('new')) return portfolioShare;
+  
+  // If it's a new position, the absolute change is the entire portfolio share
+  if (changeStr.toLowerCase().includes('new') || changeStr.toLowerCase().includes('buy')) {
+    // Some "Buy" might just be additions, but Dataroma uses "Add" for additions.
+    // "Buy" usually means a new position in some contexts, but let's check for "New" specifically
+    // or if the change is "Buy" and it's a new position.
+    // Dataroma uses "Buy" for new positions sometimes, or "Add" for existing.
+    // Let's treat "New" or "Buy" without a percentage as the full portfolio share.
+    if (!changeStr.match(/([+-]?\d+\.?\d*)%/)) {
+      return portfolioShare;
+    }
+  }
   
   const match = changeStr.match(/([+-]?\d+\.?\d*)%/);
   if (match) {
@@ -37,6 +48,12 @@ function getAbsoluteChange(portfolioShare: number, changeStr: string): number {
     // Absolute change in portfolio percentage points
     return portfolioShare - (portfolioShare / (1 + c));
   }
+  
+  // Fallback for "Buy" or "New" without percentage
+  if (changeStr.toLowerCase().includes('new') || changeStr.toLowerCase().includes('buy')) {
+    return portfolioShare;
+  }
+  
   return 0;
 }
 
